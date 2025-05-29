@@ -5,6 +5,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 2025-05-29
+
+### Added
+
+- **Event Mapping Framework**: Complete event mapping system for converting domain events to integration events
+  - `IDomainEventNotification<TDomainEvent>` - Interface for notifications that wrap domain events with additional context
+  - `DomainEventNotification<TDomainEvent>` - Base class for domain event notifications
+  - `IEventMapper<TNotification>` - Typed interface for mapping notifications to integration events
+  - `IFlexibleEventMapper<TNotification>` - Flexible interface for framework compatibility (returns objects)
+
+- **Dependency Injection Support**: Automatic registration of event mappers
+  - `ServiceCollectionExtensions.AddEventMappers()` - Register from calling assembly
+  - `ServiceCollectionExtensions.AddEventMappers(assemblies)` - Register from specific assemblies
+  - `ServiceCollectionExtensions.AddEventMappersFromAssemblyOf<T>()` - Register from assembly containing type T
+
+- **Comprehensive Examples**: Complete examples showing event mapping patterns
+  - Domain events with additional notification context
+  - One-to-many domain event to integration event mapping
+  - Both typed and flexible mapper implementations
+  - Dependency injection setup examples
+
+### Changed
+
+- **Package Description**: Updated to reflect new event mapping capabilities
+- **Package Tags**: Added event-related tags for better discoverability
+
 ## [2.0.0] - 2025-05-29
 
 ### 🚨 BREAKING CHANGES

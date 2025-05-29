@@ -253,6 +253,220 @@ public class ShoppingCart : IEntity<Guid>, IAggregateRoot<Guid>
 }
 ```
 
+## Event Mapping Framework
+
+The library includes a comprehensive event mapping framework that enables clean conversion from domain events to integration events, with support for additional context and one-to-many mappings.
+
+### Core Concepts
+
+#### Domain Event Notifications
+
+Domain event notifications wrap domain events with additional context needed for integration:
+
+```csharp
+using Zooper.Lion.Domain.Events;
+
+// Your domain event
+public class UserCreatedDomainEvent : IDomainEvent
+{
+    public string UserId { get; }
+    public string Email { get; }
+    public string FirstName { get; }
+    public string LastName { get; }
+
+    public UserCreatedDomainEvent(string userId, string email, string firstName, string lastName)
+    {
+        UserId = userId ?? throw new ArgumentNullException(nameof(userId));
+        Email = email ?? throw new ArgumentNullException(nameof(email));
+        FirstName = firstName ?? throw new ArgumentNullException(nameof(firstName));
+        LastName = lastName ?? throw new ArgumentNullException(nameof(lastName));
+    }
+}
+
+// Notification with additional context
+public class UserCreatedNotification : DomainEventNotification<UserCreatedDomainEvent>
+{
+    public string PlaintextPassword { get; }  // Additional context
+    public string ActivationToken { get; }    // Additional context
+
+    public UserCreatedNotification(
+        UserCreatedDomainEvent domainEvent,
+        string plaintextPassword,
+        string activationToken) : base(domainEvent)
+    {
+        PlaintextPassword = plaintextPassword ?? throw new ArgumentNullException(nameof(plaintextPassword));
+        ActivationToken = activationToken ?? throw new ArgumentNullException(nameof(activationToken));
+    }
+}
+```
+
+#### Integration Events
+
+Integration events represent the external contract for cross-service communication:
+
+```csharp
+using Zooper.Lion.Integration.Events;
+
+public class UserRegisteredIntegrationEvent : IIntegrationEvent
+{
+    public string UserId { get; }
+    public string Email { get; }
+    public string FullName { get; }
+
+    public UserRegisteredIntegrationEvent(string userId, string email, string fullName)
+    {
+        UserId = userId ?? throw new ArgumentNullException(nameof(userId));
+        Email = email ?? throw new ArgumentNullException(nameof(email));
+        FullName = fullName ?? throw new ArgumentNullException(nameof(fullName));
+    }
+}
+
+public class WelcomeEmailIntegrationEvent : IIntegrationEvent
+{
+    public string Email { get; }
+    public string FirstName { get; }
+    public string ActivationToken { get; }
+
+    public WelcomeEmailIntegrationEvent(string email, string firstName, string activationToken)
+    {
+        Email = email ?? throw new ArgumentNullException(nameof(email));
+        FirstName = firstName ?? throw new ArgumentNullException(nameof(firstName));
+        ActivationToken = activationToken ?? throw new ArgumentNullException(nameof(activationToken));
+    }
+}
+```
+
+### Event Mappers
+
+#### Typed Event Mapper
+
+For type-safe mapping with compile-time checking:
+
+```csharp
+using Zooper.Lion.Integration.Events;
+
+public class UserCreatedEventMapper : IEventMapper<UserCreatedNotification>
+{
+    public IEnumerable<IIntegrationEvent> MapToIntegrationEvents(UserCreatedNotification notification)
+    {
+        var domainEvent = notification.DomainEvent;
+        
+        // Map to multiple integration events
+        yield return new UserRegisteredIntegrationEvent(
+            domainEvent.UserId,
+            domainEvent.Email,
+            $"{domainEvent.FirstName} {domainEvent.LastName}");
+
+        yield return new WelcomeEmailIntegrationEvent(
+            domainEvent.Email,
+            domainEvent.FirstName,
+            notification.ActivationToken);
+    }
+}
+```
+
+#### Flexible Event Mapper
+
+For framework compatibility (returns objects instead of strongly typed events):
+
+```csharp
+using Zooper.Lion.Integration.Events;
+
+public class FlexibleUserCreatedEventMapper : IFlexibleEventMapper<UserCreatedNotification>
+{
+    public IEnumerable<object> MapToIntegrationEvents(UserCreatedNotification notification)
+    {
+        var domainEvent = notification.DomainEvent;
+        
+        yield return new UserRegisteredIntegrationEvent(
+            domainEvent.UserId,
+            domainEvent.Email,
+            $"{domainEvent.FirstName} {domainEvent.LastName}");
+
+        yield return new WelcomeEmailIntegrationEvent(
+            domainEvent.Email,
+            domainEvent.FirstName,
+            notification.ActivationToken);
+    }
+}
+```
+
+### Dependency Injection Setup
+
+The library provides extension methods for automatic registration of event mappers:
+
+```csharp
+using Microsoft.Extensions.DependencyInjection;
+using Zooper.Lion.Extensions.DependencyInjection;
+
+public class Startup
+{
+    public void ConfigureServices(IServiceCollection services)
+    {
+        // Register all event mappers from the calling assembly
+        services.AddEventMappers();
+        
+        // Register event mappers from specific assemblies
+        services.AddEventMappers(typeof(UserCreatedEventMapper).Assembly);
+        
+        // Register event mappers from assembly containing a specific type
+        services.AddEventMappersFromAssemblyOf<UserCreatedEventMapper>();
+    }
+}
+```
+
+### Usage in Application Services
+
+```csharp
+public class UserApplicationService
+{
+    private readonly IEventMapper<UserCreatedNotification> _eventMapper;
+    private readonly IServiceProvider _serviceProvider;
+
+    public UserApplicationService(
+        IEventMapper<UserCreatedNotification> eventMapper,
+        IServiceProvider serviceProvider)
+    {
+        _eventMapper = eventMapper;
+        _serviceProvider = serviceProvider;
+    }
+
+    public async Task CreateUserAsync(CreateUserCommand command)
+    {
+        // Create user and raise domain event
+        var domainEvent = new UserCreatedDomainEvent(
+            command.UserId, 
+            command.Email, 
+            command.FirstName, 
+            command.LastName);
+
+        // Create notification with additional context
+        var notification = new UserCreatedNotification(
+            domainEvent,
+            command.PlaintextPassword,
+            GenerateActivationToken());
+
+        // Map to integration events
+        var integrationEvents = _eventMapper.MapToIntegrationEvents(notification);
+
+        // Publish integration events
+        foreach (var integrationEvent in integrationEvents)
+        {
+            await PublishIntegrationEventAsync(integrationEvent);
+        }
+    }
+}
+```
+
+### Event Mapping Benefits
+
+- **Separation of Concerns**: Domain events focus on business changes, integration events focus on external contracts
+- **Additional Context**: Notifications can include context not available in the original domain event
+- **One-to-Many Mapping**: Single domain events can trigger multiple integration events
+- **Type Safety**: Strongly typed mappers provide compile-time checking
+- **Framework Compatibility**: Flexible mappers work with any event publishing framework
+- **Automatic Registration**: Dependency injection extensions simplify setup
+
 ## Benefits of This Approach
 
 - **Simplicity**: Minimal interfaces with no bulky abstract classes
@@ -261,3 +475,4 @@ public class ShoppingCart : IEntity<Guid>, IAggregateRoot<Guid>
 - **Immutability**: Records provide immutability by default when desired
 - **Encapsulation**: Proper access control across implementation styles
 - **Low Coupling**: Your domain model doesn't depend on base classes
+- **Event-Driven Architecture**: Comprehensive support for domain and integration events
