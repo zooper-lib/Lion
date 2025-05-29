@@ -11,11 +11,11 @@
         <PackageReadmeFile>README.md</PackageReadmeFile>
         
         <!-- Description -->
-        <Description>A minimalist Domain-Driven Design (DDD) library that provides interfaces and extension methods for implementing domain objects as either classes or records.</Description>
-        <PackageTags>ddd;domain-driven-design;interfaces;extensions;records;classes</PackageTags>
+        <Description>A minimalist Domain-Driven Design (DDD) library that provides interfaces and extension methods for implementing domain objects as either classes or records. Includes event mapping functionality for converting domain events to integration events.</Description>
+        <PackageTags>ddd;domain-driven-design;interfaces;extensions;records;classes;events;event-mapping;integration-events;domain-events</PackageTags>
 
         <!-- Version information -->
-        <Version>2.0.0</Version>
+        <Version>2.1.0</Version>
 
         <!-- Documentation settings -->
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
