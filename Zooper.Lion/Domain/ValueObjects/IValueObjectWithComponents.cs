@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace Zooper.Lion.Domain
+namespace Zooper.Lion.Domain.ValueObjects
 {
 	/// <summary>
 	/// Interface for value objects that can provide their equality components.

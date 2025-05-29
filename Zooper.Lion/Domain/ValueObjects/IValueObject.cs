@@ -1,4 +1,4 @@
-namespace Zooper.Lion.Domain
+namespace Zooper.Lion.Domain.ValueObjects
 {
 	/// <summary>
 	/// Defines a value object which is an immutable object that contains attributes but has no conceptual identity.

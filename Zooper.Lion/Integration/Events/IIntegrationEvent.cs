@@ -1,4 +1,6 @@
-namespace Zooper.Lion.Interfaces;
+using Zooper.Lion.Common;
+
+namespace Zooper.Lion.Integration.Events;
 
 /// <summary>
 /// Represents an integration event that is used for communication between microservices

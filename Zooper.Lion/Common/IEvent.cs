@@ -1,4 +1,4 @@
-namespace Zooper.Lion.Interfaces;
+namespace Zooper.Lion.Common;
 
 /// <summary>
 /// Represents a base event that is used for communication between microservices

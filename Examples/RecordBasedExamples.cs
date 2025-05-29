@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using Zooper.Lion.Domain.Entities;
+using Zooper.Lion.Domain.ValueObjects;
+using Zooper.Lion.Extensions.Records;
 
 // Add IsExternalInit for .NET Standard 2.0 which doesn't include it
 namespace System.Runtime.CompilerServices
@@ -8,7 +11,7 @@ namespace System.Runtime.CompilerServices
 	internal static class IsExternalInit { }
 }
 
-namespace Zooper.Lion.Domain.Examples
+namespace Zooper.Lion.Examples
 {
 	// Example of a record-based Entity
 	// Note: For entities, we only care about ID equality, not structural equality

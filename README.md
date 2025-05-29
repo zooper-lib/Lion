@@ -1,5 +1,7 @@
 # Zooper.Lion
 
+<img src="icon.png" alt="drawing" width="256"/>
+
 ## Domain-Driven Design (DDD) Library
 
 This library provides a unified and minimalist approach to implementing Domain-Driven Design (DDD) patterns in .NET applications. The architecture uses interfaces and extension methods to support both class-based and record-based implementations, allowing you to choose the most appropriate approach for your specific use case without the need for duplicate implementations.
@@ -22,6 +24,25 @@ Value objects are immutable objects identified by their properties, not by ident
 - `IValueObjectWithComponents` interface: Enables equality comparison across implementation styles
 - Extension methods that provide common implementation logic for both classes and records
 
+### Events
+
+The library provides interfaces for event-driven architectures:
+
+- `IEvent` interface: The base contract for all events
+- `IDomainEvent` interface: Events that represent business changes within a domain
+- `IIntegrationEvent` interface: Events for communication between services/microservices
+
+## Namespace Organization
+
+The library is organized into logical namespaces for better code organization:
+
+- `Zooper.Lion.Common` - Shared interfaces and utilities
+- `Zooper.Lion.Domain.Entities` - Entity and aggregate root interfaces
+- `Zooper.Lion.Domain.ValueObjects` - Value object interfaces and extensions
+- `Zooper.Lion.Domain.Events` - Domain event interfaces
+- `Zooper.Lion.Integration.Events` - Integration event interfaces
+- `Zooper.Lion.Extensions.Records` - Extension methods for record implementations
+
 ## Interface-Based Design
 
 This library uses a minimal interface-based design that gives you the freedom to implement your domain objects however you want. Instead of providing bulky abstract base classes, it offers:
@@ -37,6 +58,10 @@ This approach gives you maximum flexibility while maintaining the semantic consi
 ### Class-Based Approach
 
 ```csharp
+using Zooper.Lion.Domain.Entities;
+using Zooper.Lion.Domain.ValueObjects;
+using Zooper.Lion.Extensions.Records;
+
 // Entity
 public class Product : IEntity<Guid>
 {
@@ -115,6 +140,10 @@ public class Address : IValueObject, IValueObjectWithComponents
 ### Record-Based Approach
 
 ```csharp
+using Zooper.Lion.Domain.Entities;
+using Zooper.Lion.Domain.ValueObjects;
+using Zooper.Lion.Extensions.Records;
+
 // Entity
 public record ProductRecord : IEntity<Guid>
 {
@@ -195,6 +224,10 @@ public record AddressRecord : IValueObject, IValueObjectWithComponents
 One of the benefits of this approach is that you can mix and match class-based and record-based implementations as needed:
 
 ```csharp
+using Zooper.Lion.Domain.Entities;
+using Zooper.Lion.Domain.ValueObjects;
+using Zooper.Lion.Extensions.Records;
+
 // Use records for immutable reference data
 public record ProductRecord : IEntity<Guid>, IValueObjectWithComponents
 {
