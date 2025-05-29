@@ -1,4 +1,4 @@
-namespace Zooper.Lion.Domain
+namespace Zooper.Lion.Domain.Entities
 {
 	/// <summary>
 	/// Defines an aggregate root which is the primary entity through which we interact with the aggregate.

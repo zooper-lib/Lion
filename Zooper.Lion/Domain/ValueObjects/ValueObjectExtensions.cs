@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Zooper.Lion.Domain
+namespace Zooper.Lion.Domain.ValueObjects
 {
 	/// <summary>
 	/// Extension methods for value object implementations (class or record)

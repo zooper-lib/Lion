@@ -1,6 +1,7 @@
 using System;
+using Zooper.Lion.Domain.Entities;
 
-namespace Zooper.Lion.Domain
+namespace Zooper.Lion.Extensions.Records
 {
 	/// <summary>
 	/// Extension methods for entity implementations (class or record)

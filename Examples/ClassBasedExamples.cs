@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
+using Zooper.Lion.Domain.Entities;
+using Zooper.Lion.Domain.ValueObjects;
+using Zooper.Lion.Extensions.Records;
 
-namespace Zooper.Lion.Domain.Examples
+namespace Zooper.Lion.Examples
 {
 	// Example of a class-based Entity
 	public class ClassBasedEntity : IEntity<Guid>

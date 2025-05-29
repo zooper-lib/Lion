@@ -1,8 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Zooper.Lion.Domain.Entities;
+using Zooper.Lion.Domain.ValueObjects;
+using Zooper.Lion.Extensions.Records;
 
-namespace Zooper.Lion.Domain.Examples
+namespace Zooper.Lion.Examples
 {
 	// A domain for online shopping
 

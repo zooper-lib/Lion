@@ -1,6 +1,6 @@
 using System;
 
-namespace Zooper.Lion.Domain
+namespace Zooper.Lion.Domain.Entities
 {
 	/// <summary>
 	/// Defines an entity which is a domain object with a unique identity.
